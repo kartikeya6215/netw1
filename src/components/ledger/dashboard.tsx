@@ -96,7 +96,7 @@ export function Dashboard() {
     range,
     whatIf,
     activeDate: active.date,
-    now: anchor ? new Date(`${anchor}T00:00:00.000Z`) : new Date(),
+    now: anchor ? new Date(`₹{anchor}T00:00:00.000Z`) : new Date(),
   });
   const hasMoney = snapshots.some((snap) =>
     accounts.some((account) => (snap.balances[account.id] ?? 0) > 0),
@@ -142,7 +142,7 @@ export function Dashboard() {
           <label className="min-w-0 flex-1 text-sm text-muted sm:flex-none">
             <span className="sr-only">Reading date</span>
             <select
-              className={`${field} sm:w-56`}
+              className={`₹{field} sm:w-56`}
               value={active.date}
               onChange={(event) => setActiveDate(event.target.value)}
             >
@@ -169,7 +169,7 @@ export function Dashboard() {
         </p>
         <p
           aria-live="polite"
-          className={`font-serif text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl ${
+          className={`font-serif text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl ₹{
             figure.net < 0 ? "text-copper" : "text-ink"
           }`}
         >
@@ -202,7 +202,7 @@ export function Dashboard() {
           <div className="min-w-0">
             <dt className="text-sm text-muted">Versus a year</dt>
             <dd
-              className={`mt-1 font-serif text-lg tabular-nums sm:text-2xl ${
+              className={`mt-1 font-serif text-lg tabular-nums sm:text-2xl ₹{
                 yearDelta == null ? "text-muted" : yearDelta < 0 ? "text-copper" : "text-forest"
               }`}
             >
@@ -221,7 +221,7 @@ export function Dashboard() {
                 key={item}
                 type="button"
                 aria-pressed={range === item}
-                className={`min-h-11 rounded-full px-3 text-sm font-medium ${
+                className={`min-h-11 rounded-full px-3 text-sm font-medium ₹{
                   range === item ? "bg-forest text-paper" : "text-ink"
                 }`}
                 onClick={() => setRange(item)}
@@ -332,7 +332,7 @@ export function Dashboard() {
             min={0}
             max={5000}
             step={50}
-            prefix="$"
+            prefix="₹"
             onChange={(extraMonthly) => useLedger.getState().setWhatIf({ extraMonthly })}
           />
         </div>
@@ -342,12 +342,12 @@ export function Dashboard() {
               key={months}
               type="button"
               aria-pressed={whatIf.horizon === months}
-              className={`min-h-11 rounded-full px-4 text-sm font-medium ${
+              className={`min-h-11 rounded-full px-4 text-sm font-medium ₹{
                 whatIf.horizon === months ? "bg-forest text-paper" : "border border-line bg-card text-ink"
               }`}
               onClick={() => useLedger.getState().setHorizon(months)}
             >
-              {months < 12 ? `${months} mo` : `${months / 12} yr`}
+              {months < 12 ? `₹{months} mo` : `₹{months / 12} yr`}
             </button>
           ))}
         </div>
@@ -366,7 +366,7 @@ export function Dashboard() {
             {insights.map((item) => (
               <li
                 key={item.id}
-                className={`border-l-2 pl-4 ${item.tone === "down" ? "border-copper" : "border-forest"}`}
+                className={`border-l-2 pl-4 ₹{item.tone === "down" ? "border-copper" : "border-forest"}`}
               >
                 <p className="text-sm font-medium text-muted">{item.title}</p>
                 <p className="mt-1">{item.body}</p>
@@ -548,7 +548,7 @@ function GoalField({ goal }: { goal: number | null }) {
           setGoal(amount);
           setText(String(amount));
         }}
-        className={`${field} mt-1 w-36`}
+        className={`₹{field} mt-1 w-36`}
       />
     </label>
   );
@@ -599,7 +599,7 @@ function Slider({
         step={step}
         disabled={disabled}
         value={shown}
-        aria-valuetext={`${prefix ?? ""}${value}${suffix ?? ""}`}
+        aria-valuetext={`₹{prefix ?? ""}₹{value}₹{suffix ?? ""}`}
         onChange={(event) => onChange(Number(event.target.value))}
       />
       {hint && <p className="text-sm text-muted">{hint}</p>}
@@ -635,8 +635,8 @@ function Mix({
               </div>
               <div className="mt-1 h-2 rounded-full bg-line">
                 <div
-                  className={`h-2 rounded-full ${kind === "asset" ? "bg-forest" : "bg-copper"}`}
-                  style={{ width: `${Math.max(2, row.pct)}%`, opacity: 1 - index * 0.14 }}
+                  className={`h-2 rounded-full ₹{kind === "asset" ? "bg-forest" : "bg-copper"}`}
+                  style={{ width: `₹{Math.max(2, row.pct)}%`, opacity: 1 - index * 0.14 }}
                 />
               </div>
             </li>
@@ -658,7 +658,7 @@ function AccountColumn({ kind, date }: { kind: Kind; date: string }) {
     <div className="rounded-2xl border border-line bg-card p-4 md:p-6">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-2xl">{kind === "asset" ? "Assets" : "Debts"}</h2>
-        <p className={`font-serif text-xl tabular-nums ${kind === "liability" ? "text-copper" : "text-ink"}`}>
+        <p className={`font-serif text-xl tabular-nums ₹{kind === "liability" ? "text-copper" : "text-ink"}`}>
           {money(total)}
         </p>
       </div>
@@ -689,7 +689,7 @@ function AccountRow({ account, date }: { account: Account; date: string }) {
     <li className="border-b border-line py-3">
       <div className="flex items-center gap-2">
         <input
-          aria-label={`${account.name} name`}
+          aria-label={`₹{account.name} name`}
           value={account.name}
           onChange={(event) => updateAccount(account.id, { name: event.target.value })}
           onBlur={(event) => {
@@ -703,7 +703,7 @@ function AccountRow({ account, date }: { account: Account; date: string }) {
         />
         <button
           type="button"
-          aria-label={confirm ? `Confirm remove ${account.name}` : `Remove ${account.name}`}
+          aria-label={confirm ? `Confirm remove ₹{account.name}` : `Remove ₹{account.name}`}
           className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted"
           onClick={() => {
             if (!confirm) {
@@ -718,7 +718,7 @@ function AccountRow({ account, date }: { account: Account; date: string }) {
       </div>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <select
-          aria-label={`${account.name} category`}
+          aria-label={`₹{account.name} category`}
           value={account.category}
           onChange={(event) =>
             updateAccount(account.id, { category: event.target.value as Category })
@@ -732,7 +732,7 @@ function AccountRow({ account, date }: { account: Account; date: string }) {
           ))}
         </select>
         <MoneyField
-          label={`${account.name} balance`}
+          label={`₹{account.name} balance`}
           value={balance}
           onCommit={(amount) => setBalance(account.id, amount)}
         />
@@ -759,7 +759,7 @@ function MoneyField({
   return (
     <label className="relative block">
       <span className="sr-only">{label}</span>
-      <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted">$</span>
+      <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted">₹</span>
       <input
         aria-label={label}
         inputMode="decimal"
@@ -776,7 +776,7 @@ function MoneyField({
           onCommit(amount);
           setText(String(amount));
         }}
-        className={`${field} pr-3 pl-7 text-right tabular-nums`}
+        className={`₹{field} pr-3 pl-7 text-right tabular-nums`}
       />
     </label>
   );
@@ -792,7 +792,7 @@ function RateField({ account }: { account: Account }) {
     <label className="mt-2 flex items-center gap-2 text-sm text-muted">
       Annual rate
       <input
-        aria-label={`${account.name} annual rate`}
+        aria-label={`₹{account.name} annual rate`}
         inputMode="decimal"
         value={text}
         onChange={(event) => setText(event.target.value)}
@@ -829,7 +829,7 @@ function AddAccount({ kind }: { kind: Kind }) {
 
   if (!open) {
     return (
-      <button type="button" className={`${quiet} mt-4`} onClick={() => setOpen(true)}>
+      <button type="button" className={`₹{quiet} mt-4`} onClick={() => setOpen(true)}>
         <Plus className="size-4" aria-hidden />
         Add {kind === "asset" ? "asset" : "debt"}
       </button>
