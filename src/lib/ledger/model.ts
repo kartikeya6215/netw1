@@ -4,7 +4,7 @@ export function todayISO(now = new Date()): string {
   const y = now.getUTCFullYear();
   const m = String(now.getUTCMonth() + 1).padStart(2, "0");
   const d = String(now.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  return `₹ {y}-₹ {m}-₹ {d}`;
 }
 
 function utcMidnight(iso: string): number {
@@ -15,8 +15,8 @@ function utcMidnight(iso: string): number {
 export function formatDay(iso: string, style: "long" | "short" = "long"): string {
   const [y, m, d] = iso.split("-").map(Number);
   const month = MONTHS[(m || 1) - 1] ?? "";
-  if (style === "short") return `${month} ${d}`;
-  return `${month} ${d}, ${y}`;
+  if (style === "short") return `₹ {month} ₹ {d}`;
+  return `₹ {month} ₹ {d}, ₹ {y}`;
 }
 
 export type Kind = "asset" | "liability";
@@ -155,14 +155,14 @@ export function moneyCompact(n: number): string {
 
 export function moneySigned(n: number): string {
   const abs = money(Math.abs(n));
-  if (n > 0) return `+${abs}`;
-  if (n < 0) return `−${abs}`;
+  if (n > 0) return `+₹ {abs}`;
+  if (n < 0) return `−₹ {abs}`;
   return abs;
 }
 
 export function percentSigned(n: number): string {
   const sign = n > 0 ? "+" : n < 0 ? "−" : "";
-  return `${sign}${Math.abs(n).toFixed(1)}%`;
+  return `₹ {sign}₹ {Math.abs(n).toFixed(1)}%`;
 }
 
 export function clamp(n: number, min: number, max: number): number {
@@ -178,13 +178,13 @@ export function categoriesFor(kind: Kind): CategoryMeta[] {
 }
 
 export function newId(prefix: string): string {
-  return `${prefix}-${crypto.randomUUID()}`;
+  return `₹ {prefix}-₹ {crypto.randomUUID()}`;
 }
 
 export function parseMoney(text: string): number | null {
-  const cleaned = text.replace(/[$,\s]/g, "");
+  const cleaned = text.replace(/[₹ ,\s]/g, "");
   if (!cleaned) return 0;
-  if (!/^\d+(\.\d{0,2})?$/.test(cleaned)) return null;
+  if (!/^\d+(\.\d{0,2})?₹ /.test(cleaned)) return null;
   const n = Number(cleaned);
   if (!Number.isFinite(n) || n < 0 || n > 1_000_000_000_000) return null;
   return Math.round(n);
@@ -391,22 +391,22 @@ export function filterRange(snapshots: Snapshot[], range: RangeKey, now = new Da
 
 function joinAnd(parts: string[]): string {
   if (parts.length <= 1) return parts[0] ?? "";
-  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
-  return `${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}`;
+  if (parts.length === 2) return `₹ {parts[0]} and ₹ {parts[1]}`;
+  return `₹ {parts.slice(0, -1).join(", ")}, and ₹ {parts[parts.length - 1]}`;
 }
 
 function horizonPhrase(months: number): string {
-  if (months < 18) return `${months} months`;
+  if (months < 18) return `₹ {months} months`;
   const years = Math.round(months / 12);
-  return years === 1 ? "1 year" : `${years} years`;
+  return years === 1 ? "1 year" : `₹ {years} years`;
 }
 
 function etaPhrase(months: number): string {
   if (months < 1) return "under a month";
   const rounded = Math.round(months);
-  if (rounded <= 18) return rounded === 1 ? "about 1 month" : `about ${rounded} months`;
+  if (rounded <= 18) return rounded === 1 ? "about 1 month" : `about ₹ {rounded} months`;
   const years = Math.round(rounded / 12);
-  return years === 1 ? "about a year" : `about ${years} years`;
+  return years === 1 ? "about a year" : `about ₹ {years} years`;
 }
 
 export function scenarioCopy(args: {
@@ -424,29 +424,29 @@ export function scenarioCopy(args: {
   const endScenario = shocked + (pace ?? 0) * whatIf.horizon + whatIf.extraMonthly * whatIf.horizon;
   const levers: string[] = [];
   if (whatIf.marketPct !== 0) {
-    levers.push(`markets ${whatIf.marketPct > 0 ? "up" : "down"} ${Math.abs(whatIf.marketPct)}%`);
+    levers.push(`markets ₹ {whatIf.marketPct > 0 ? "up" : "down"} ₹ {Math.abs(whatIf.marketPct)}%`);
   }
   if (whatIf.propertyPct !== 0) {
-    levers.push(`property ${whatIf.propertyPct > 0 ? "up" : "down"} ${Math.abs(whatIf.propertyPct)}%`);
+    levers.push(`property ₹ {whatIf.propertyPct > 0 ? "up" : "down"} ₹ {Math.abs(whatIf.propertyPct)}%`);
   }
   if (whatIf.extraMonthly > 0) {
-    levers.push(`saving an extra ${money(whatIf.extraMonthly)} a month`);
+    levers.push(`saving an extra ₹ {money(whatIf.extraMonthly)} a month`);
   }
   const when = horizonPhrase(whatIf.horizon);
   if (levers.length === 0) {
     if (pace == null) return "Add another reading to sketch a pace. The sliders still show a one-time shock.";
-    return `If the recent pace holds, about ${money(endPace)} in ${when}. Move a slider to bend that.`;
+    return `If the recent pace holds, about ₹ {money(endPace)} in ₹ {when}. Move a slider to bend that.`;
   }
-  let sentence = `With ${joinAnd(levers)}, this reading becomes ${money(shocked)} today`;
-  if (pace == null && whatIf.extraMonthly === 0) return `${sentence}.`;
-  sentence += `, and about ${money(endScenario)} in ${when}`;
+  let sentence = `With ₹ {joinAnd(levers)}, this reading becomes ₹ {money(shocked)} today`;
+  if (pace == null && whatIf.extraMonthly === 0) return `₹ {sentence}.`;
+  sentence += `, and about ₹ {money(endScenario)} in ₹ {when}`;
   if (pace != null) {
     const gap = endScenario - endPace;
     if (Math.abs(gap) >= 100) {
-      sentence += ` — ${money(Math.abs(gap))} ${gap > 0 ? "above" : "below"} the recent pace`;
+      sentence += ` — ₹ {money(Math.abs(gap))} ₹ {gap > 0 ? "above" : "below"} the recent pace`;
     }
   }
-  return `${sentence}.`;
+  return `₹ {sentence}.`;
 }
 
 export function buildInsights(args: {
@@ -474,7 +474,7 @@ export function buildInsights(args: {
     insights.push({
       id: "change",
       title: "Since last reading",
-      body: `${moneySigned(delta)}${pct == null ? "" : ` (${percentSigned(pct)})`} since ${formatDay(prev.date)}.`,
+      body: `₹ {moneySigned(delta)}₹ {pct == null ? "" : ` (₹ {percentSigned(pct)})`} since ₹ {formatDay(prev.date)}.`,
       tone: delta > 0 ? "up" : delta < 0 ? "down" : "plain",
     });
   }
@@ -487,7 +487,7 @@ export function buildInsights(args: {
     insights.push({
       id: "year",
       title: "Past year",
-      body: `${moneySigned(delta)}${pct == null ? "" : ` (${percentSigned(pct)})`} versus ${formatDay(year.date)}.`,
+      body: `₹ {moneySigned(delta)}₹ {pct == null ? "" : ` (₹ {percentSigned(pct)})`} versus ₹ {formatDay(year.date)}.`,
       tone: delta > 0 ? "up" : delta < 0 ? "down" : "plain",
     });
   }
@@ -499,28 +499,28 @@ export function buildInsights(args: {
       insights.push({
         id: "goal",
         title: "Goal",
-        body: `You're already ${money(Math.abs(gap))} past ${money(goal)}.`,
+        body: `You're already ₹ {money(Math.abs(gap))} past ₹ {money(goal)}.`,
         tone: "up",
       });
     } else if (pace != null && pace > 1) {
       insights.push({
         id: "goal",
         title: "Goal",
-        body: `${money(goal)} is ${money(gap)} away. At the recent pace, that's ${etaPhrase(gap / pace)}.`,
+        body: `₹ {money(goal)} is ₹ {money(gap)} away. At the recent pace, that's ₹ {etaPhrase(gap / pace)}.`,
         tone: "plain",
       });
     } else if (pace != null) {
       insights.push({
         id: "goal",
         title: "Goal",
-        body: `${money(goal)} is ${money(gap)} away, and the recent pace isn't climbing toward it.`,
+        body: `₹ {money(goal)} is ₹ {money(gap)} away, and the recent pace isn't climbing toward it.`,
         tone: "down",
       });
     } else {
       insights.push({
         id: "goal",
         title: "Goal",
-        body: `${money(goal)} is ${money(gap)} away. A second reading is what turns that into a timeline.`,
+        body: `₹ {money(goal)} is ₹ {money(gap)} away. A second reading is what turns that into a timeline.`,
         tone: "plain",
       });
     }
@@ -541,7 +541,7 @@ export function buildInsights(args: {
       insights.push({
         id: "mover",
         title: "Largest move",
-        body: `${best.name} moved the most, ${direction} ${money(Math.abs(best.delta))} since ${formatDay(prev.date, "short")}.`,
+        body: `₹ {best.name} moved the most, ₹ {direction} ₹ {money(Math.abs(best.delta))} since ₹ {formatDay(prev.date, "short")}.`,
         tone: helpful ? "up" : best.delta === 0 ? "plain" : "down",
       });
     }
@@ -562,14 +562,14 @@ export function buildInsights(args: {
       insights.push({
         id: "mix",
         title: "Concentration",
-        body: `${top.name} is ${Math.round(topPct)}% of assets. A price change there moves almost the whole chart.`,
+        body: `₹ {top.name} is ₹ {Math.round(topPct)}% of assets. A price change there moves almost the whole chart.`,
         tone: "plain",
       });
     } else if (cashPct < 8) {
       insights.push({
         id: "mix",
         title: "Cash",
-        body: `Cash is ${money(cash)}, ${Math.round(cashPct)}% of assets. Most of this net worth isn't spendable.`,
+        body: `Cash is ₹ {money(cash)}, ₹ {Math.round(cashPct)}% of assets. Most of this net worth isn't spendable.`,
         tone: "plain",
       });
     }
@@ -587,7 +587,7 @@ export function buildInsights(args: {
     insights.push({
       id: "interest",
       title: "Interest",
-      body: `At the rates on file, debt costs about ${money(interest)} a year. ${topCost.name} is ${money(topCost.cost)} of that.`,
+      body: `At the rates on file, debt costs about ₹ {money(interest)} a year. ₹ {topCost.name} is ₹ {money(topCost.cost)} of that.`,
       tone: "down",
     });
   } else if (nowTotals.assets > 0 && nowTotals.debts > 0) {
@@ -595,7 +595,7 @@ export function buildInsights(args: {
     insights.push({
       id: "leverage",
       title: "Leverage",
-      body: `You owe ${money(nowTotals.debts)} against ${money(nowTotals.assets)} of assets — ${cents} cents of debt per dollar owned.`,
+      body: `You owe ₹ {money(nowTotals.debts)} against ₹ {money(nowTotals.assets)} of assets — ₹ {cents} cents of debt per dollar owned.`,
       tone: "plain",
     });
   }
@@ -620,8 +620,8 @@ function tickFor(iso: string, index: number, isos: string[]): string {
   const m = mRaw || 1;
   const month = MONTHS[m - 1] ?? "";
   const yy = String(y ?? "").slice(2);
-  if (index === 0 || m === 1) return crowded ? `${month} ${d} '${yy}` : `${month} '${yy}`;
-  return crowded ? `${month} ${d}` : month;
+  if (index === 0 || m === 1) return crowded ? `₹ {month} ₹ {d} '₹ {yy}` : `₹ {month} '₹ {yy}`;
+  return crowded ? `₹ {month} ₹ {d}` : month;
 }
 
 export function buildChart(args: {
@@ -668,10 +668,10 @@ export function buildChart(args: {
     for (let month = 1; month <= args.whatIf.horizon; month += 1) {
       const showTick = month === args.whatIf.horizon || month % (args.whatIf.horizon > 12 ? 6 : 3) === 0;
       points.push({
-        key: `future-${month}`,
+        key: `future-₹ {month}`,
         readingDate: null,
-        tick: showTick ? `+${month}m` : "",
-        tipTitle: `${month} month${month === 1 ? "" : "s"} out`,
+        tick: showTick ? `+₹ {month}m` : "",
+        tipTitle: `₹ {month} month₹ {month === 1 ? "" : "s"} out`,
         net: null,
         assets: null,
         debts: null,
@@ -697,7 +697,7 @@ export function yDomain(values: Array<number | null | undefined>): [number, numb
   return [min - pad, max + pad];
 }
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}₹ /;
 
 function isCategory(value: string): value is Category {
   return CATEGORIES.some((c) => c.id === value);
