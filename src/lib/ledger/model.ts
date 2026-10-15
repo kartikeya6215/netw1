@@ -139,7 +139,7 @@ export interface ChartPoint {
 export function money(n: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(Math.round(n));
 }
@@ -147,7 +147,7 @@ export function money(n: number): string {
 export function moneyCompact(n: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(n);
