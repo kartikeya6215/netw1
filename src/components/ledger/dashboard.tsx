@@ -37,7 +37,7 @@ const field =
 export function Shell() {
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-6 md:px-8 md:py-10">
-      <h1 className="font-serif text-2xl tracking-tight text-forest">Kumar K</h1>
+      <h1 className="font-serif text-2xl tracking-tight text-forest">Kumar K  </h1>
       <p className="mt-1 text-sm text-muted">Private net worth</p>
       <p className="mt-8 text-sm text-muted">Opening your ledger…</p>
     </main>
@@ -112,7 +112,7 @@ export function Dashboard() {
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 py-6 md:px-8 md:py-10">
       <header className="flex items-baseline justify-between gap-3">
-        <h1 className="font-serif text-2xl tracking-tight text-forest">Kumar K</h1>
+        <h1 className="font-serif text-2xl tracking-tight text-forest">Kumar K </h1>
         <p className="text-sm text-muted">Private · this browser</p>
       </header>
 
@@ -479,13 +479,13 @@ export function Dashboard() {
                   try {
                     const parsed = parsePersisted(JSON.parse(String(reader.result)));
                     if (!parsed) {
-                      setImportError("That file isn't a Kumar K backup.");
+                      setImportError("That file isn't a Kumar K  backup.");
                       return;
                     }
                     setImportError(null);
                     replaceAll(parsed);
                   } catch {
-                    setImportError("That file isn't a Kumar K backup.");
+                    setImportError("That file isn't a Kumar K  backup.");
                   }
                 };
                 reader.readAsText(file);
